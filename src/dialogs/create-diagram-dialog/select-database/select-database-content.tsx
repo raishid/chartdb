@@ -15,6 +15,7 @@ const ROW_SIZE = 3;
 const ROWS = 2;
 const TOTAL_SLOTS = ROW_SIZE * ROWS;
 const SUPPORTED_DB_TYPES: DatabaseType[] = [
+    DatabaseType.GRAO,
     DatabaseType.MYSQL,
     DatabaseType.POSTGRESQL,
     DatabaseType.MARIADB,
@@ -22,6 +23,7 @@ const SUPPORTED_DB_TYPES: DatabaseType[] = [
     DatabaseType.SQL_SERVER,
     DatabaseType.COCKROACHDB,
     DatabaseType.CLICKHOUSE,
+    DatabaseType.GENERIC,
 ];
 
 export const SelectDatabaseContent: React.FC<SelectDatabaseContentProps> = ({
@@ -61,6 +63,8 @@ export const SelectDatabaseContent: React.FC<SelectDatabaseContentProps> = ({
                 onValueChange={(value: DatabaseType) => {
                     if (!value) {
                         setDatabaseType(DatabaseType.GENERIC);
+                    } else if (value == DatabaseType.GRAO) {
+                        setDatabaseType(DatabaseType.GRAO);
                     } else {
                         setDatabaseType(value);
                         onContinue();

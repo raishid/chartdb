@@ -1,4 +1,5 @@
 export enum DatabaseType {
+    GRAO = 'grao',
     GENERIC = 'generic',
     POSTGRESQL = 'postgresql',
     MYSQL = 'mysql',

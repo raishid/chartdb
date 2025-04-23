@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 import { TableNodeDependencyIndicator } from './table-node-dependency-indicator';
 import type { EdgeType } from '../canvas';
 import { Input } from '@/components/input/input';
-import { useClickAway, useKeyPressEvent } from 'react-use';
+import { useKeyPressEvent } from 'react-use';
 import {
     Tooltip,
     TooltipContent,
@@ -64,7 +64,11 @@ export const TableNode: React.FC<NodeProps<TableNodeType>> = React.memo(
         const { t } = useTranslation();
         const [editMode, setEditMode] = useState(false);
         const [tableName, setTableName] = useState(table.name);
+        const [tableSchema, setTableSchema] = useState(
+            table.schema || 'public'
+        );
         const inputRef = React.useRef<HTMLInputElement>(null);
+        const inputRefSchema = React.useRef<HTMLInputElement>(null);
 
         const {
             getTableNewName,
@@ -183,21 +187,25 @@ export const TableNode: React.FC<NodeProps<TableNodeType>> = React.memo(
             ].sort((a, b) => fields.indexOf(a) - fields.indexOf(b));
         }, [expanded, fields, isMustDisplayedField]);
 
-        const editTableName = useCallback(() => {
+        const editTableSchemaName = useCallback(() => {
             if (!editMode) return;
             if (tableName.trim()) {
                 updateTable(table.id, { name: tableName.trim() });
             }
+            if (tableSchema.trim()) {
+                updateTable(table.id, { schema: tableSchema.trim() });
+            }
             setEditMode(false);
-        }, [tableName, table.id, updateTable, editMode]);
+        }, [tableSchema, tableName, table.id, updateTable, editMode]);
 
         const abortEdit = useCallback(() => {
             setEditMode(false);
             setTableName(table.name);
-        }, [table.name]);
+            setTableSchema(table.schema || 'public');
+        }, [table.name, table.schema]);
 
-        useClickAway(inputRef, editTableName);
-        useKeyPressEvent('Enter', editTableName);
+        //useClickAway(inputRef, editTableName);
+        useKeyPressEvent('Enter', editTableSchemaName);
         useKeyPressEvent('Escape', abortEdit);
 
         const enterEditMode = (e: React.MouseEvent) => {
@@ -335,10 +343,22 @@ export const TableNode: React.FC<NodeProps<TableNodeType>> = React.memo(
                             ) : editMode && !readonly ? (
                                 <>
                                     <Input
+                                        ref={inputRefSchema}
+                                        onBlur={editTableSchemaName}
+                                        placeholder={table.schema}
+                                        type="text"
+                                        value={tableSchema}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={(e) =>
+                                            setTableSchema(e.target.value)
+                                        }
+                                        className="h-6 w-full border-[0.5px] border-blue-400 bg-slate-100 focus-visible:ring-0 dark:bg-slate-900"
+                                    />
+                                    .
+                                    <Input
                                         ref={inputRef}
-                                        onBlur={editTableName}
+                                        onBlur={editTableSchemaName}
                                         placeholder={table.name}
-                                        autoFocus
                                         type="text"
                                         value={tableName}
                                         onClick={(e) => e.stopPropagation()}
@@ -350,13 +370,22 @@ export const TableNode: React.FC<NodeProps<TableNodeType>> = React.memo(
                                     <Button
                                         variant="ghost"
                                         className="size-6 p-0 text-slate-500 hover:bg-primary-foreground hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-                                        onClick={editTableName}
+                                        onClick={editTableSchemaName}
                                     >
                                         <Check className="size-4" />
                                     </Button>
                                 </>
                             ) : (
                                 <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Label
+                                            className="text-editable truncate px-2 py-0.5 text-sm font-bold"
+                                            onDoubleClick={enterEditMode}
+                                        >
+                                            {table.schema}
+                                        </Label>
+                                    </TooltipTrigger>
+                                    .
                                     <TooltipTrigger asChild>
                                         <Label
                                             className="text-editable truncate px-2 py-0.5 text-sm font-bold"

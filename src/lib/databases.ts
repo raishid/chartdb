@@ -24,6 +24,7 @@ import { DatabaseType } from './domain/database-type';
 import type { EffectiveTheme } from '@/context/theme-context/theme-context';
 
 export const databaseTypeToLabelMap: Record<DatabaseType, string> = {
+    [DatabaseType.GRAO]: 'Grao',
     [DatabaseType.GENERIC]: 'Generic',
     [DatabaseType.POSTGRESQL]: 'PostgreSQL',
     [DatabaseType.MYSQL]: 'MySQL',
@@ -35,6 +36,7 @@ export const databaseTypeToLabelMap: Record<DatabaseType, string> = {
 };
 
 export const databaseLogoMap: Record<DatabaseType, string> = {
+    [DatabaseType.GRAO]: '',
     [DatabaseType.MYSQL]: MysqlLogo,
     [DatabaseType.POSTGRESQL]: PostgresqlLogo,
     [DatabaseType.MARIADB]: MariaDBLogo,
@@ -46,6 +48,7 @@ export const databaseLogoMap: Record<DatabaseType, string> = {
 };
 
 export const databaseDarkLogoMap: Record<DatabaseType, string> = {
+    [DatabaseType.GRAO]: '',
     [DatabaseType.MYSQL]: MysqlLogoDark,
     [DatabaseType.POSTGRESQL]: PostgresqlLogoDark,
     [DatabaseType.MARIADB]: MariaDBLogoDark,
@@ -73,4 +76,5 @@ export const databaseSecondaryLogoMap: Record<DatabaseType, string> = {
     [DatabaseType.CLICKHOUSE]: ClickhouseLogo2,
     [DatabaseType.COCKROACHDB]: CockroachDBLogo2,
     [DatabaseType.GENERIC]: GeneralDBLogo2,
+    [DatabaseType.GRAO]: GeneralDBLogo2,
 };

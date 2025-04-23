@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { DatabaseType } from '../../domain/database-type';
 import { clickhouseDataTypes } from './clickhouse-data-types';
 import { genericDataTypes } from './generic-data-types';
+import { graoDataTypes } from './grao-data-types';
 import { mariadbDataTypes } from './mariadb-data-types';
 import { mysqlDataTypes } from './mysql-data-types';
 import { postgresDataTypes } from './postgres-data-types';
@@ -24,6 +25,7 @@ export const dataTypeSchema: z.ZodType<DataType> = z.object({
 });
 
 export const dataTypeMap: Record<DatabaseType, readonly DataTypeData[]> = {
+    [DatabaseType.GRAO]: graoDataTypes,
     [DatabaseType.GENERIC]: genericDataTypes,
     [DatabaseType.POSTGRESQL]: postgresDataTypes,
     [DatabaseType.MYSQL]: mysqlDataTypes,
@@ -47,6 +49,7 @@ export const sortDataTypes = (dataTypes: DataTypeData[]): DataTypeData[] => {
 
 export const sortedDataTypeMap: Record<DatabaseType, readonly DataTypeData[]> =
     {
+        [DatabaseType.GRAO]: sortDataTypes([...dataTypeMap[DatabaseType.GRAO]]),
         [DatabaseType.GENERIC]: sortDataTypes([
             ...dataTypeMap[DatabaseType.GENERIC],
         ]),
@@ -89,6 +92,7 @@ const compatibleTypes: Record<DatabaseType, Record<string, string[]>> = {
     [DatabaseType.CLICKHOUSE]: {},
     [DatabaseType.COCKROACHDB]: {},
     [DatabaseType.GENERIC]: {},
+    [DatabaseType.GRAO]: {},
 };
 
 export function areFieldTypesCompatible(

@@ -10,6 +10,7 @@ interface DDLInstruction {
 }
 
 const DDLInstructionsMap: Record<DatabaseType, DDLInstruction[]> = {
+    [DatabaseType.GRAO]: [],
     [DatabaseType.GENERIC]: [],
     [DatabaseType.MYSQL]: [
         {

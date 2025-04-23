@@ -19,6 +19,24 @@ const routes: RouteObject[] = [
         },
     })),
     {
+        path: 'grao',
+        async lazy() {
+            const { GraoPage } = await import('./pages/editor-page/grao');
+            return {
+                element: <GraoPage />,
+            };
+        },
+    },
+    {
+        path: 'grao/:diagramId',
+        async lazy() {
+            const { GraoPage } = await import('./pages/editor-page/grao');
+            return {
+                element: <GraoPage />,
+            };
+        },
+    },
+    {
         path: 'examples',
         async lazy() {
             const { ExamplesPage } = await import(

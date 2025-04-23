@@ -15,7 +15,7 @@ import { ListItemHeaderButton } from '@/pages/editor-page/side-panel/list-item-h
 import type { DBTable } from '@/lib/domain/db-table';
 import { Input } from '@/components/input/input';
 import { useChartDB } from '@/hooks/use-chartdb';
-import { useClickAway, useKeyPressEvent } from 'react-use';
+import { useKeyPressEvent } from 'react-use';
 import { useSortable } from '@dnd-kit/sortable';
 import {
     DropdownMenu,
@@ -60,26 +60,35 @@ export const TableListItemHeader: React.FC<TableListItemHeaderProps> = ({
     const { hideSidePanel } = useLayout();
     const [editMode, setEditMode] = React.useState(false);
     const [tableName, setTableName] = React.useState(table.name);
+    const [tableSchema, setTableSchema] = React.useState(
+        table.schema || 'public'
+    );
     const { isMd: isDesktop } = useBreakpoint('md');
     const inputRef = React.useRef<HTMLInputElement>(null);
+    const inputRefSchema = React.useRef<HTMLInputElement>(null);
     const { listeners } = useSortable({ id: table.id });
 
-    const editTableName = useCallback(() => {
+    const editTableSchemaName = useCallback(() => {
         if (!editMode) return;
         if (tableName.trim()) {
             updateTable(table.id, { name: tableName.trim() });
         }
-
+        if (tableSchema.trim()) {
+            updateTable(table.id, { schema: tableSchema.trim() });
+        }
         setEditMode(false);
-    }, [tableName, table.id, updateTable, editMode]);
+    }, [tableSchema, tableName, table.id, updateTable, editMode]);
+
+    //  useClickAway(inputRef, editTableSchemaName);
+    //  useClickAway(inputRefSchema, editTableSchemaName);
+    useKeyPressEvent('Enter', editTableSchemaName);
 
     const abortEdit = useCallback(() => {
         setEditMode(false);
         setTableName(table.name);
-    }, [table.name]);
+        setTableSchema(table.schema || 'public');
+    }, [table.name, table.schema]);
 
-    useClickAway(inputRef, editTableName);
-    useKeyPressEvent('Enter', editTableName);
     useKeyPressEvent('Escape', abortEdit);
 
     const enterEditMode = (e: React.MouseEvent) => {
@@ -270,6 +279,38 @@ export const TableListItemHeader: React.FC<TableListItemHeaderProps> = ({
             <div className="flex min-w-0 flex-1 px-1">
                 {editMode ? (
                     <Input
+                        ref={inputRefSchema}
+                        autoFocus
+                        type="text"
+                        placeholder={table.schema}
+                        value={tableSchema}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => setTableSchema(e.target.value)}
+                        className="h-7 w-full focus-visible:ring-0"
+                    />
+                ) : (
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div
+                                onDoubleClick={enterEditMode}
+                                className="text-editable truncate px-2 py-0.5"
+                            >
+                                {table.schema}
+                                <span className="text-xs text-muted-foreground">
+                                    {schemaToDisplay
+                                        ? ` (${schemaToDisplay})`
+                                        : ''}
+                                </span>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            {t('tool_tips.double_click_to_edit')}
+                        </TooltipContent>
+                    </Tooltip>
+                )}
+                .
+                {editMode ? (
+                    <Input
                         ref={inputRef}
                         autoFocus
                         type="text"
@@ -314,7 +355,7 @@ export const TableListItemHeader: React.FC<TableListItemHeaderProps> = ({
                         </div>
                     </>
                 ) : (
-                    <ListItemHeaderButton onClick={editTableName}>
+                    <ListItemHeaderButton onClick={editTableSchemaName}>
                         <Check />
                     </ListItemHeaderButton>
                 )}

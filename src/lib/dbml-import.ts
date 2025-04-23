@@ -6,6 +6,7 @@ import type { Cardinality, DBRelationship } from '@/lib/domain/db-relationship';
 import type { DBField } from '@/lib/domain/db-field';
 import type { DataType } from '@/lib/data/data-types/data-types';
 import { genericDataTypes } from '@/lib/data/data-types/generic-data-types';
+import { graoDataTypes } from '@/lib/data/data-types/grao-data-types';
 import { randomColor } from '@/lib/colors';
 import { DatabaseType } from '@/lib/domain/database-type';
 
@@ -58,25 +59,25 @@ interface DBMLRef {
     endpoints: [DBMLEndpoint, DBMLEndpoint];
 }
 
-const mapDBMLTypeToGenericType = (dbmlType: string): DataType => {
+const mapDBMLTypeToGraoType = (dbmlType: string): DataType => {
     const normalizedType = dbmlType.toLowerCase().replace(/\(.*\)/, '');
-    const matchedType = genericDataTypes.find((t) => t.id === normalizedType);
+    const matchedType = graoDataTypes.find((t) => t.id === normalizedType);
     if (matchedType) return matchedType;
     const typeMap: Record<string, string> = {
-        int: 'integer',
-        varchar: 'varchar',
-        bool: 'boolean',
-        number: 'numeric',
-        string: 'varchar',
+        primary: 'primary',
         text: 'text',
-        timestamp: 'timestamp',
-        datetime: 'timestamp',
-        float: 'float',
-        double: 'double',
+        textarea: 'textarea',
+        number: 'number',
+        currency: 'currency',
         decimal: 'decimal',
-        bigint: 'bigint',
-        smallint: 'smallint',
-        char: 'char',
+        password: 'password',
+        date: 'date',
+        datetime: 'datetime',
+        email: 'email',
+        url: 'url',
+        radio: 'radio',
+        checkbox: 'checkbox',
+        select: 'select',
     };
     const mappedType = typeMap[normalizedType];
     if (mappedType) {
@@ -109,7 +110,22 @@ export const importDBMLToDiagram = async (
     try {
         const parser = new Parser();
         const parsedData = parser.parse(dbmlContent, 'dbml');
-        const dbmlData = parsedData.schemas[0];
+        //const dbmlData = parsedData.schemas[0];
+        const allTables = [];
+        const allRefs = [];
+        for (const schema of parsedData.schemas) {
+            for (const table of schema.tables) {
+                allTables.push(table);
+            }
+            for (const ref of schema.refs) {
+                allRefs.push(ref);
+            }
+        }
+
+        const dbmlData = {
+            tables: allTables,
+            refs: allRefs,
+        };
 
         // Extract only the necessary data from the parsed DBML
         const extractedData = {
@@ -188,7 +204,7 @@ export const importDBMLToDiagram = async (
             const fields = table.fields.map((field) => ({
                 id: generateId(),
                 name: field.name.replace(/['"]/g, ''),
-                type: mapDBMLTypeToGenericType(field.type.type_name),
+                type: mapDBMLTypeToGraoType(field.type.type_name),
                 nullable: !field.not_null,
                 primaryKey: field.pk || false,
                 unique: field.unique || false,
@@ -291,7 +307,7 @@ export const importDBMLToDiagram = async (
         return {
             id: generateDiagramId(),
             name: 'DBML Import',
-            databaseType: DatabaseType.GENERIC,
+            databaseType: DatabaseType.GRAO,
             tables,
             relationships,
             createdAt: new Date(),

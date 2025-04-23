@@ -18,6 +18,23 @@ export interface Example {
 
 export const examples: Example[] = [
     {
+        id: '4',
+        name: 'MakeALL schema',
+        description: 'A schema of MakeALL.',
+        image: EmployeeExample,
+        imageDark: EmployeeExampleDark,
+        diagram: {
+            id: 'makeall',
+            name: 'makeall-db',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            databaseType: DatabaseType.GRAO,
+            tables: [],
+            relationships: [],
+        },
+    },
+
+    {
         id: '1',
         name: 'Employees schema',
         description:
