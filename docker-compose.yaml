@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_OPENAI_API_KEY: ${VITE_OPENAI_API_KEY:-}
+        VITE_OPENAI_API_ENDPOINT: ${VITE_OPENAI_API_ENDPOINT:-}
+        VITE_LLM_MODEL_NAME: ${VITE_LLM_MODEL_NAME:-}
+        VITE_HIDE_BUCKLE_DOT_DEV: ${VITE_HIDE_BUCKLE_DOT_DEV:-}

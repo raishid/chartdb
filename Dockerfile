@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM oven/bun:1.2.5-alpine AS builder
 
 ARG VITE_OPENAI_API_KEY
 ARG VITE_OPENAI_API_ENDPOINT
@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 
 COPY package.json package-lock.json ./
 
-RUN npm ci
+RUN bun install
 
 COPY . .
 
@@ -18,7 +18,7 @@ RUN echo "VITE_OPENAI_API_KEY=${VITE_OPENAI_API_KEY}" > .env && \
     echo "VITE_LLM_MODEL_NAME=${VITE_LLM_MODEL_NAME}" >> .env && \
     echo "VITE_HIDE_BUCKLE_DOT_DEV=${VITE_HIDE_BUCKLE_DOT_DEV}" >> .env 
 
-RUN npm run build
+RUN bun run build
 
 FROM nginx:stable-alpine AS production
 
